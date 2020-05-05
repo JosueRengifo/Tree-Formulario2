@@ -1,6 +1,7 @@
-function Clasificator(variables){
+function Clasificator(variables,datavalue)
+{
 
-    var domainname = 'http://127.0.0.1/:5000/';
+    var domainname = 'http://127.0.0.1:5000/api/';
     var serverurl = domainname + variables;
     
     var response = $.ajax(
@@ -11,15 +12,14 @@ function Clasificator(variables){
      );
 
         response.then(data=>{
-        console.log(data)
-        return data
+            CreateUser(datavalue,data)
         })
 
 }
 
 function CreateUser(params, Clasificator) {
-var domainname = 'http://localhost';
-    var token = 'cb93da3aa79f850cc243833300373266';
+var domainname = 'http://localhost/moodle/';
+    var token = 'ce13720bd9a10593c24c0850ca8481d8';
     var functionname = 'core_user_create_users';
     var serverurl = domainname + '/webservice/rest/server.php' ;
     
@@ -54,14 +54,15 @@ var domainname = 'http://localhost';
                          );
    
     response.then(data=>{
-        console.log(data)
+        
         RegistarUsu(data[0],Clasificator);
     })
     
 
 } 
 var variables="";
-var datavalue={};
+var datavalue={}; 
+var completado=false;
 $(document).ready(function() {
    $('#enviar').click(function(){ 
        datavalue["name"]=$("#name").val();
@@ -72,12 +73,18 @@ $(document).ready(function() {
        $('input').each(function(){
             if (this.checked) {
                datavalue[$(this).attr("name")]=$(this).val()
-              variables=variables+ ","+ $(this).val()
+                if (variables=="")
+                  variables=variables+ $(this).val()
+                else
+                    variables=variables+ ","+ $(this).val()
             }
       }); 
-      var result= Clasificator(variables);  
-      if (datavalue != {}) 
-          CreateUser(datavalue,result)
+      
+      if (datavalue != {}  && completado==false)
+        {
+            completado=true;
+            Clasificator(variables,datavalue); 
+        }   
       else
             alert('Debes seleccionar al menos una opción.');
 
@@ -89,13 +96,13 @@ $(document).ready(function() {
    //New Function
     function RegistarUsu(user, clasificar){
 
-    var domainname = 'http://localhost';
-    var token = '09e24acc01bd696567c4fef12acd7524';
+    var domainname = 'http://localhost/moodle/';
+    var token = '29b7a963732a18bf169af548bbec7ad9';
     var functionname = 'enrol_manual_enrol_users';
     var serverurl = domainname + '/webservice/rest/server.php' ;
 
-    var enrollUser = [{roleid: '1', userid:user.id , courseid :parseInt(clasificar.classification+1)}]
-    
+    var enrollUser = [{roleid: '1', userid:user.id , courseid :parseInt(clasificar.classification)+1}]
+    console.log(enrollUser)
     var data = {
         wstoken: token,
         wsfunction: functionname,
